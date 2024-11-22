@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 
 import 'amplitude.dart';
@@ -23,6 +25,8 @@ class _AnimatedWaveListState extends State<AnimatedWaveList> {
 
   late ListModel<Amplitude>
       _list; // Model for managing the list of amplitude values.
+
+  StreamSubscription<Amplitude>? _streamSubscription;
 
   /// Builds a waveform bar widget for the given index and animation.
   Widget _buildItem(
@@ -58,9 +62,15 @@ class _AnimatedWaveListState extends State<AnimatedWaveList> {
     );
 
     // Listen to the stream and insert new amplitude values into the list.
-    widget.stream.listen((event) {
+    _streamSubscription = widget.stream.listen((event) {
       if (mounted) _insert(event);
     });
+  }
+
+  @override
+  void dispose() {
+    _streamSubscription?.cancel();
+    super.dispose();
   }
 
   @override
